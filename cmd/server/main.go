@@ -3,6 +3,8 @@ package main
 import (
 	"log/slog"
 	"os"
+
+	"github.com/radek-zitek-cloud/goedu-theta/internal/config"
 )
 
 // Setting up the slog logger for initial logging
@@ -23,7 +25,7 @@ func setupBoostrapLogger() *slog.Logger {
 		// The log level is set to Error to ensure that only critical issues are logged
 		// This helps in maintaining a clean log output while still capturing necessary information
 		handlerOptions = &slog.HandlerOptions{
-			AddSource: true, // Include source file and line number in logs
+			AddSource: false, // Include source file and line number in logs
 			Level:     slog.LevelError, // Default Error log level
 		}
 	} else {
@@ -31,7 +33,7 @@ func setupBoostrapLogger() *slog.Logger {
 		// In development, we log debug and above, which includes debug, info, warning
 		// and error messages. This is useful for development and debugging purposes.
 		handlerOptions = &slog.HandlerOptions{
-			AddSource: true, // Include source file and line number in logs
+			AddSource: false, // Include source file and line number in logs
 			Level:     slog.LevelDebug, // Default Debug log level
 		}
 	}
@@ -55,5 +57,15 @@ func main() {
 	// Initialize the slog bootstrap logger
 	logger := setupBoostrapLogger()
 
-	logger.Debug("1️⃣ About to start configuration load",)
+	logger.Debug("🔠 About to start configuration load",)
+
+	config := config.NewConfig(*logger)
+
+	logger.Debug("🔠 Configuration loaded",
+		slog.String("environment", config.Environment),
+		slog.String("log_level", config.Logger.Level),
+		slog.String("log_format", config.Logger.Format),
+		slog.String("log_output", config.Logger.Output),
+		slog.Bool("log_add_source", config.Logger.AddSource),
+	)
 }
