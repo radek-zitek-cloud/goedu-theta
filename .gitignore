@@ -1,0 +1,12 @@
+# Ignore .env files
+# These files often contain sensitive information such as API keys, database credentials, etc.
+# It's a good practice to keep them out of version control.
+# Add your .env files here to prevent them from being tracked by Git
+.env
+
+# Ignore bin/ directory
+# The bin/ directory is typically used to store executable files or scripts.
+# These files are often generated during the build process and do not need to be tracked by Git
+# Add the bin/ directory to prevent it from being tracked by Git
+bin/
+

@@ -1,0 +1,9 @@
+{
+    "environment": "development",
+    "slog": {
+        "level": "debug",
+        "format": "text",
+        "add_source": true,
+        "output": "stdout"
+    }
+}
