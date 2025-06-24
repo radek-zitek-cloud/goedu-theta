@@ -100,6 +100,12 @@ func NewConfig() (*Config, error) {
 	slog.Debug("🔠 Loading configuration")
 
 	// Load environment variable to determine the current environment
+	// TODO: This should look for a .env file as well, but for now it only uses the OS environment variable
+	// The environment variable should be set to one of: development, test, staging, production
+	// If not set, it will default to "development"
+	slog.Debug("🔠 Loading environment variable",
+		slog.String("variable", "ENVIRONMENT"),
+	)
 	var environment string = os.Getenv("ENVIRONMENT")
 	slog.Debug("🔠 Environment variable loaded",
 		slog.String("environment", environment),
@@ -140,6 +146,7 @@ func NewConfig() (*Config, error) {
 	)
 
 	var cfg Config
+	cfg.Environment = environment
 
 	// Load base configuration
 	if err := loadFromJSONFile(base_config_file, &cfg); err != nil {
