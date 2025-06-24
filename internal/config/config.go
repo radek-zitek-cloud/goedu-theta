@@ -47,28 +47,28 @@ func NewDefaultConfig(logger slog.Logger) *Config {
 	}
 }
 
-func NewConfig(logger slog.Logger) (*Config, error) {
-	logger.Debug("🔠 Loading configuration")
+func NewConfig() (*Config, error) {
+	slog.Debug("🔠 Loading configuration")
 
 	// Load environment variables and override default configuration
 	var environment string = os.Getenv("ENVIRONMENT")
-	logger.Debug("🔠 Environment variable loaded",
+	slog.Debug("🔠 Environment variable loaded",
 		slog.String("environment", environment),
 	)
 	// Validate the environment variable and set the environment
 	// If the environment variable is not set or invalid, default to "development"
 	switch environment {
 	case "development", "test", "staging", "production":
-		logger.Debug("🔠 Valid environment detected",
+		slog.Debug("🔠 Valid environment detected",
 			slog.String("environment", environment),
 		)
 	default:
-		logger.Warn("🔠 Invalid or unset environment variable, defaulting to development",
+		slog.Warn("🔠 Invalid or unset environment variable, defaulting to development",
 			slog.String("environment", environment),
 		)
 		environment = "development"
 	}
-	logger.Debug("🔠 Setting environment",
+	slog.Debug("🔠 Setting environment",
 		slog.String("environment", environment),
 	)
 
@@ -85,7 +85,7 @@ func NewConfig(logger slog.Logger) (*Config, error) {
 	// Construct the path to the dotenv file
 	const dotenv_file = ".env"
 
-	logger.Debug("🔠 Configuration file paths",
+	slog.Debug("🔠 Configuration file paths",
 		slog.String("base", base_config_file),
 		slog.String("environment", environment_config_file),
 		slog.String("local", local_config_file),
@@ -95,28 +95,28 @@ func NewConfig(logger slog.Logger) (*Config, error) {
 	var cfg Config
 
 	if err := loadFromJSONFile(base_config_file, &cfg); err != nil {
-		logger.Error("🔠 Error loading default configuration",
+		slog.Error("🔠 Error loading default configuration",
 			slog.String("file", base_config_file),
 			slog.Any("error", err),
 		)
 		return nil, err
 	}
 	if err := loadFromJSONFile(environment_config_file, &cfg); err != nil {
-		logger.Error("🔠 Error loading environment configuration",
+		slog.Error("🔠 Error loading environment configuration",
 			slog.String("file", environment_config_file),
 			slog.Any("error", err),
 		)
 		return nil, err
 	}
 	if err := loadFromJSONFile(local_config_file, &cfg); err != nil {
-		logger.Error("🔠 Error loading local configuration",
+		slog.Error("🔠 Error loading local configuration",
 			slog.String("file", local_config_file),
 			slog.Any("error", err),
 		)
 		return nil, err
 	}
 	if err := overrideFromEnv(dotenv_file, &cfg); err != nil {
-		logger.Error("🔠 Error overriding configuration from environment variables and .env file",
+		slog.Error("🔠 Error overriding configuration from environment variables and .env file",
 			slog.String("file", dotenv_file),
 			slog.Any("error", err),
 		)
@@ -124,7 +124,7 @@ func NewConfig(logger slog.Logger) (*Config, error) {
 	}
 
 	// Log the loaded configuration
-	logger.Debug("🔠 Configuration loaded",
+	slog.Debug("🔠 Configuration loaded",
 		slog.String("environment", cfg.Environment),
 		slog.String("log_level", cfg.Logger.Level),
 		slog.String("log_format", cfg.Logger.Format),
