@@ -11,74 +11,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Config holds the top-level application configuration.
-//
-// Fields:
-//   - Environment: The current environment (development, test, staging, production)
-//   - Logger: Logger configuration struct
-//   - Test: Test configuration struct
-//
-// Each field is tagged for JSON, YAML, and environment variable mapping.
-type Config struct {
-	Environment string `json:"environment" yaml:"environment" env:"ENVIRONMENT"` // Application environment
-	Logger      Logger `json:"logger" yaml:"logger" env:"LOGGER"`                // Logger configuration
-	Test        Test   `json:"test" yaml:"test" env:"TEST"`                      // Test configuration
-}
-
-// Logger holds configuration for the application logger.
-//
-// Fields:
-//   - Level: Log level (debug, info, warn, error)
-//   - Format: Log format (json, text)
-//   - Output: Output destination (stdout, file, etc.)
-//   - AddSource: Whether to include source file and line number in logs
-type Logger struct {
-	Level     string `json:"level" yaml:"level" env:"SLOG_LEVEL"`                // Log level
-	Format    string `json:"format" yaml:"format" env:"SLOG_FORMAT"`             // Log format
-	Output    string `json:"output" yaml:"output" env:"SLOG_OUTPUT"`             // Output destination
-	AddSource bool   `json:"add_source" yaml:"add_source" env:"SLOG_ADD_SOURCE"` // Include source info
-}
-
-// Test holds configuration for test-related settings.
-//
-// Fields:
-//   - Label_default: Default test label
-//   - Label_env: Test label from environment
-//   - Label_override: Test label from override
-type Test struct {
-	Label_default  string `json:"label_def" yaml:"label_def" env:"TEST_LABEL_DEF"`                // Default test label
-	Label_env      string `json:"label_env" yaml:"label_env" env:"TEST_LABEL_ENV"`                // Test label from env
-	Label_override string `json:"label_override" yaml:"label_override" env:"TEST_LABEL_OVERRIDE"` // Test label from override
-}
-
-// NewDefaultConfig returns a Config struct with default values.
-//
-// Parameters:
-//   - logger: slog.Logger for debug logging during initialization
-//
-// Returns:
-//   - *Config: pointer to a Config struct with default values
-//
-// Example:
-//
-//	cfg := config.NewDefaultConfig(logger)
-//
-// Complexity:
-//
-//	Time: O(1), Space: O(1)
-func NewDefaultConfig(logger slog.Logger) *Config {
-	logger.Debug("🔠 Initializing default configuration")
-	return &Config{
-		Environment: "development", // Default to development environment
-		Logger: Logger{
-			Level:     "debug",  // Default log level
-			Format:    "text",   // Default log format
-			Output:    "stdout", // Default output to standard output
-			AddSource: true,     // Include source file and line number in logs
-		},
-	}
-}
-
 // NewConfig loads the application configuration from JSON files and environment variables.
 //
 // This function merges base, environment-specific, and local config files, then overrides
@@ -100,9 +32,6 @@ func NewConfig() (*Config, error) {
 	slog.Debug("🔠 Loading configuration")
 
 	// Load environment variable to determine the current environment
-	// TODO: This should look for a .env file as well, but for now it only uses the OS environment variable
-	// The environment variable should be set to one of: development, test, staging, production
-	// If not set, it will default to "development"
 	slog.Debug("🔠 Loading environment variable",
 		slog.String("variable", "ENVIRONMENT"),
 	)
@@ -112,7 +41,6 @@ func NewConfig() (*Config, error) {
 	)
 
 	// Validate the environment variable and set the environment
-	// If the environment variable is not set or invalid, default to "development"
 	switch environment {
 	case "development", "test", "staging", "production":
 		slog.Debug("🔠 Valid environment detected",
@@ -149,7 +77,7 @@ func NewConfig() (*Config, error) {
 	cfg.Environment = environment
 
 	// Load base configuration
-	if err := loadFromJSONFile(base_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(base_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading default configuration",
 			slog.String("file", base_config_file),
 			slog.Any("error", err),
@@ -157,7 +85,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Load environment-specific configuration
-	if err := loadFromJSONFile(environment_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(environment_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading environment configuration",
 			slog.String("file", environment_config_file),
 			slog.Any("error", err),
@@ -165,7 +93,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Load local configuration (optional, for developer overrides)
-	if err := loadFromJSONFile(local_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(local_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading local configuration",
 			slog.String("file", local_config_file),
 			slog.Any("error", err),
@@ -173,7 +101,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Override config values from environment variables and .env file
-	if err := overrideFromEnv(dotenv_file, &cfg); err != nil {
+	if err := OverrideFromEnv(dotenv_file, &cfg); err != nil {
 		slog.Error("🔠 Error overriding configuration from environment variables and .env file",
 			slog.String("file", dotenv_file),
 			slog.Any("error", err),
@@ -193,6 +121,24 @@ func NewConfig() (*Config, error) {
 	return &cfg, nil
 }
 
+// NewConfig loads the application configuration from JSON files and environment variables.
+//
+// This function merges base, environment-specific, and local config files, then overrides
+// with environment variables and .env file values. It provides detailed debug/error logging
+// for each step and returns a fully populated Config struct.
+//
+// Returns:
+//   - *Config: pointer to the loaded Config struct
+//   - error: error if loading or parsing fails
+//
+// Example:
+//
+//	cfg, err := config.NewConfig()
+//
+// Complexity:
+//
+//	Time: O(1) except for file I/O, Space: O(1)
+
 // loadFromJSONFile loads configuration values from a JSON file into the provided Config struct.
 //
 // Parameters:
@@ -209,7 +155,7 @@ func NewConfig() (*Config, error) {
 // Complexity:
 //
 //	Time: O(n) where n is the file size, Space: O(1)
-func loadFromJSONFile(filePath string, cfg *Config) error {
+func LoadFromJSONFile(filePath string, cfg *Config) error {
 	// Log the attempt to load the configuration file
 	slog.Debug("💾 Loading configuration from JSON file",
 		slog.String("file", filePath),
@@ -280,7 +226,7 @@ func loadFromJSONFile(filePath string, cfg *Config) error {
 // Complexity:
 //
 //	Time: O(n) where n is the number of struct fields, Space: O(1)
-func overrideFromEnv(dotenvFile string, cfg *Config) error {
+func OverrideFromEnv(dotenvFile string, cfg *Config) error {
 	// Log the start of the override process
 	slog.Debug("🔠 Overriding configuration from environment variables and .env file")
 
