@@ -1,9 +1,13 @@
 {
     "environment": "development",
-    "slog": {
+    "logger": {
         "level": "debug",
         "format": "text",
         "add_source": true,
         "output": "stdout"
+    },
+    "test": {
+        "label_def": "added in default JSON",
+        "label_override": "added in default JSON"
     }
 }

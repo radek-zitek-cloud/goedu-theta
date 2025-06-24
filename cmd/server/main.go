@@ -59,13 +59,15 @@ func main() {
 
 	logger.Debug("🔠 About to start configuration load",)
 
-	config := config.NewConfig(*logger)
+	cfg, err := config.NewConfig(*logger)
+	if err != nil {
+		logger.Error("🔠 Error loading configuration",
+			slog.Any("error", err),
+		)
+		return
+	}
 
-	logger.Debug("🔠 Configuration loaded",
-		slog.String("environment", config.Environment),
-		slog.String("log_level", config.Logger.Level),
-		slog.String("log_format", config.Logger.Format),
-		slog.String("log_output", config.Logger.Output),
-		slog.Bool("log_add_source", config.Logger.AddSource),
+	logger.Debug("🔠 Configuration loaded successfully",
+		slog.Any("config", cfg),
 	)
 }

@@ -1,0 +1,6 @@
+{
+    "test": {
+        "label_env": "added in environment JSON",
+        "label_override": "overridden in environment JSON"
+    }
+}
