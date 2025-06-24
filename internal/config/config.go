@@ -77,7 +77,7 @@ func NewConfig() (*Config, error) {
 	cfg.Environment = environment
 
 	// Load base configuration
-	if err := loadFromJSONFile(base_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(base_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading default configuration",
 			slog.String("file", base_config_file),
 			slog.Any("error", err),
@@ -85,7 +85,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Load environment-specific configuration
-	if err := loadFromJSONFile(environment_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(environment_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading environment configuration",
 			slog.String("file", environment_config_file),
 			slog.Any("error", err),
@@ -93,7 +93,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Load local configuration (optional, for developer overrides)
-	if err := loadFromJSONFile(local_config_file, &cfg); err != nil {
+	if err := LoadFromJSONFile(local_config_file, &cfg); err != nil {
 		slog.Error("🔠 Error loading local configuration",
 			slog.String("file", local_config_file),
 			slog.Any("error", err),
@@ -101,7 +101,7 @@ func NewConfig() (*Config, error) {
 		return nil, err
 	}
 	// Override config values from environment variables and .env file
-	if err := overrideFromEnv(dotenv_file, &cfg); err != nil {
+	if err := OverrideFromEnv(dotenv_file, &cfg); err != nil {
 		slog.Error("🔠 Error overriding configuration from environment variables and .env file",
 			slog.String("file", dotenv_file),
 			slog.Any("error", err),
@@ -155,7 +155,7 @@ func NewConfig() (*Config, error) {
 // Complexity:
 //
 //	Time: O(n) where n is the file size, Space: O(1)
-func loadFromJSONFile(filePath string, cfg *Config) error {
+func LoadFromJSONFile(filePath string, cfg *Config) error {
 	// Log the attempt to load the configuration file
 	slog.Debug("💾 Loading configuration from JSON file",
 		slog.String("file", filePath),
@@ -226,7 +226,7 @@ func loadFromJSONFile(filePath string, cfg *Config) error {
 // Complexity:
 //
 //	Time: O(n) where n is the number of struct fields, Space: O(1)
-func overrideFromEnv(dotenvFile string, cfg *Config) error {
+func OverrideFromEnv(dotenvFile string, cfg *Config) error {
 	// Log the start of the override process
 	slog.Debug("🔠 Overriding configuration from environment variables and .env file")
 
