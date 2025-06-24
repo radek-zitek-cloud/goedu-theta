@@ -37,7 +37,7 @@ func main() {
 	logger.InitializeBootstrapLogger()
 
 	// Log the start of the configuration loading process.
-	slog.Debug("🔠 About to start configuration load")
+	logger.GetLogger().Debug("🔠 About to start configuration load")
 
 	// Load the application configuration from JSON files and environment variables.
 	// This function merges base, environment-specific, and local config files,
