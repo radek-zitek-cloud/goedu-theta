@@ -8,51 +8,79 @@ import (
 	"github.com/radek-zitek-cloud/goedu-theta/internal/config"
 )
 
-// Config holds logger configuration
-type Config struct {
-	Level     string
-	Format    string
-	AddSource bool
-	Output    string
-}
-
 var (
-	instance *slog.Logger
-	mu       sync.RWMutex
+	instance *slog.Logger // Singleton instance of the logger
+	mu       sync.RWMutex // Mutex to ensure thread-safe logger operations
 )
 
 // InitializeBootstrapLogger creates and sets the singleton logger with default bootstrap settings.
-// Should be called at program startup before config is loaded.
+//
+// This function should be called at program startup before the application configuration is loaded.
+// It sets up a logger suitable for early-stage logging, using environment-based defaults.
+//
+// Returns:
+//
+//	*slog.Logger: The initialized bootstrap logger instance.
+//
+// Example:
+//
+//	logger.InitializeBootstrapLogger()
+//
+// Complexity:
+//
+//	Time: O(1), Space: O(1)
 func InitializeBootstrapLogger() *slog.Logger {
 	mu.Lock()
 	defer mu.Unlock()
 
+	// Determine log level and options based on environment
 	var handlerOptions *slog.HandlerOptions
 	isProduction := os.Getenv("ENVIRONMENT") == "production"
+
 	if isProduction {
+		// In production, log only errors and above for performance and clarity
 		handlerOptions = &slog.HandlerOptions{
-			AddSource: false,
+			AddSource: false, // Do not include source info in production by default
 			Level:     slog.LevelError,
 		}
 	} else {
+		// In development, log debug and above for maximum visibility
 		handlerOptions = &slog.HandlerOptions{
-			AddSource: false,
+			AddSource: false, // Can be set to true if needed
 			Level:     slog.LevelDebug,
 		}
 	}
+
+	// Create a new logger with text output to stdout
 	logger := slog.New(slog.NewTextHandler(os.Stdout, handlerOptions))
 	instance = logger
-	slog.SetDefault(logger)
+	slog.SetDefault(logger) // Set as the global default logger
+
+	// Log initialization for traceability
 	logger.Debug("👢 Bootstrap Logger initialized", slog.String("environment", os.Getenv("ENVIRONMENT")))
 	return logger
 }
 
-// ConfigureLogger reconfigures the singleton logger with the provided config.
-// This should be called after config is loaded.
+// ConfigureLogger reconfigures the singleton logger with the provided configuration.
+//
+// This function should be called after the application configuration is loaded.
+// It updates the logger's log level, format, and source inclusion based on the config.
+//
+// Parameters:
+//   - config (config.Logger): The logger configuration struct loaded from config files/env.
+//
+// Example:
+//
+//	logger.ConfigureLogger(cfg.Logger)
+//
+// Complexity:
+//
+//	Time: O(1), Space: O(1)
 func ConfigureLogger(config config.Logger) {
 	mu.Lock()
 	defer mu.Unlock()
 
+	// Map string log level to slog.Level
 	var level slog.Level
 	switch config.Level {
 	case "debug":
@@ -65,11 +93,13 @@ func ConfigureLogger(config config.Logger) {
 		level = slog.LevelInfo
 	}
 
+	// Set handler options based on config
 	opts := &slog.HandlerOptions{
 		Level:     level,
 		AddSource: config.AddSource,
 	}
 
+	// Select handler type (JSON or text) based on config
 	var handler slog.Handler
 	if config.Format == "json" {
 		handler = slog.NewJSONHandler(os.Stdout, opts)
@@ -77,13 +107,30 @@ func ConfigureLogger(config config.Logger) {
 		handler = slog.NewTextHandler(os.Stdout, opts)
 	}
 
+	// Create and set the new logger instance
 	logger := slog.New(handler)
 	instance = logger
 	slog.SetDefault(logger)
+
+	// Log reconfiguration for traceability
 	logger.Debug("🔄 Logger reconfigured", slog.String("level", config.Level), slog.String("format", config.Format))
 }
 
-// GetLogger returns the singleton logger instance.
+// GetLogger returns the singleton logger instance for use throughout the application.
+//
+// If the logger has not been initialized, it will initialize a bootstrap logger.
+//
+// Returns:
+//
+//	*slog.Logger: The singleton logger instance.
+//
+// Example:
+//
+//	log := logger.GetLogger()
+//
+// Complexity:
+//
+//	Time: O(1), Space: O(1)
 func GetLogger() *slog.Logger {
 	mu.RLock()
 	defer mu.RUnlock()
