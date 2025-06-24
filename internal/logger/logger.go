@@ -133,7 +133,15 @@ func ConfigureLogger(config config.Logger) {
 //	Time: O(1), Space: O(1)
 func GetLogger() *slog.Logger {
 	mu.RLock()
-	defer mu.RUnlock()
+	if instance != nil {
+		// If already initialized, return the instance
+		defer mu.RUnlock()
+		return instance
+	}
+	mu.RUnlock() // Release the read lock before acquiring the write lock
+
+	mu.Lock()
+	defer mu.Unlock()
 	if instance == nil {
 		// If not initialized, initialize with bootstrap logger
 		return InitializeBootstrapLogger()
