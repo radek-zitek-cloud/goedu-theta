@@ -30,7 +30,7 @@ func NewDefaultConfig(logger slog.Logger) *Config {
 			AddSource: true,     // Include source file and line number in logs
 		},
 		Server: Server{
-			Port:            8080,        // Default HTTP port
+			Port:            6910,        // Default HTTP port
 			Host:            "localhost", // Default bind address
 			ReadTimeout:     30,          // 30 seconds read timeout
 			WriteTimeout:    30,          // 30 seconds write timeout

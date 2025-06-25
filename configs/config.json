@@ -7,11 +7,11 @@
         "output": "stdout"
     },
     "server": {
-        "port": 8080,
+        "port": 6910,
         "host": "localhost",
-        "read_timeout": 30,
-        "write_timeout": 30,
-        "shutdown_timeout": 15
+        "read_timeout": 31,
+        "write_timeout": 31,
+        "shutdown_timeout": 16
     },
     "test": {
         "label_def": "added in default JSON",
