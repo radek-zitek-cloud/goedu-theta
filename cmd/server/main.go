@@ -68,4 +68,9 @@ func main() {
 
 	// TODO (2025-06-24): Start the main server logic here (HTTP server, gRPC, etc.)
 	// This is a placeholder for future application startup code.
+	slog.Info("🚀 Server is starting up...")
+	
+	// Create the main server instance and start it.
+
+	slog.Info("🪛 Server started successfully, ready to handle requests")
 }

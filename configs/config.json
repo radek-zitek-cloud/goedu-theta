@@ -2,7 +2,7 @@
     "environment": "development",
     "logger": {
         "level": "debug",
-        "format": "text",
+        "format": "pretty",
         "add_source": true,
         "output": "stdout"
     },

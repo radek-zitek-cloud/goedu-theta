@@ -66,8 +66,10 @@ func InitializeBootstrapLogger() *slog.Logger {
 // This function should be called after the application configuration is loaded.
 // It updates the logger's log level, format, and source inclusion based on the config.
 //
-// Parameters:
-//   - config (config.Logger): The logger configuration struct loaded from config files/env.
+// Supported formats:
+//   - "json": machine-readable JSON logs
+//   - "text": plain text logs (slog.TextHandler)
+//   - "pretty": human-friendly pretty console logs (PrettyConsoleHandler)
 //
 // Example:
 //
@@ -99,11 +101,14 @@ func ConfigureLogger(config config.Logger) {
 		AddSource: config.AddSource,
 	}
 
-	// Select handler type (JSON or text) based on config
+	// Select handler type (JSON, text, or pretty) based on config
 	var handler slog.Handler
-	if config.Format == "json" {
+	switch config.Format {
+	case "json":
 		handler = slog.NewJSONHandler(os.Stdout, opts)
-	} else {
+	case "pretty":
+		handler = NewPrettyConsoleHandler(os.Stdout, opts)
+	default:
 		handler = slog.NewTextHandler(os.Stdout, opts)
 	}
 
@@ -114,6 +119,26 @@ func ConfigureLogger(config config.Logger) {
 
 	// Log reconfiguration for traceability
 	logger.Debug("🔄 Logger reconfigured", slog.String("level", config.Level), slog.String("format", config.Format))
+}
+
+// NewPrettyLogger returns a new logger with PrettyConsoleHandler for human-friendly console output.
+//
+// Args:
+//
+//	level: slog.Level (minimum log level)
+//	addSource: bool (include PC value in output)
+//
+// Returns:
+//
+//	*slog.Logger
+//
+// Example:
+//
+//	log := NewPrettyLogger(slog.LevelDebug, false)
+//	log.Info("Pretty log", "foo", "bar")
+func NewPrettyLogger(level slog.Level, addSource bool) *slog.Logger {
+	h := NewPrettyConsoleHandler(os.Stdout, &slog.HandlerOptions{Level: level, AddSource: addSource})
+	return slog.New(h)
 }
 
 // GetLogger returns the singleton logger instance for use throughout the application.
