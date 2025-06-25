@@ -1,4 +1,16 @@
 {
+    "server": {
+        "port": 6910,
+        "host": "0.0.0.0",
+        "read_timeout": 31,
+        "write_timeout": 31,
+        "shutdown_timeout": 16
+    },
+    "logger": {
+        "level": "debug",
+        "format": "pretty",
+        "add_source": false
+    },
     "test": {
         "label_env": "added in environment JSON",
         "label_override": "overridden in environment JSON"

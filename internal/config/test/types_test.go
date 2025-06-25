@@ -1,4 +1,4 @@
-package test
+package config_test
 
 import (
 	"reflect"
@@ -10,6 +10,7 @@ import (
 func TestConfigStructTags(t *testing.T) {
 	cfgType := reflect.TypeOf(config.Config{})
 	loggerType := reflect.TypeOf(config.Logger{})
+	serverType := reflect.TypeOf(config.Server{})
 	testType := reflect.TypeOf(config.Test{})
 
 	// Check Config struct tags
@@ -18,6 +19,9 @@ func TestConfigStructTags(t *testing.T) {
 	}
 	if _, ok := cfgType.FieldByName("Logger"); !ok {
 		t.Error("Config struct missing 'Logger' field")
+	}
+	if _, ok := cfgType.FieldByName("Server"); !ok {
+		t.Error("Config struct missing 'Server' field")
 	}
 	if _, ok := cfgType.FieldByName("Test"); !ok {
 		t.Error("Config struct missing 'Test' field")
@@ -35,6 +39,23 @@ func TestConfigStructTags(t *testing.T) {
 	}
 	if tag := loggerType.Field(3).Tag.Get("json"); tag != "add_source" {
 		t.Errorf("Logger.AddSource json tag = %s, want 'add_source'", tag)
+	}
+
+	// Check Server struct tags
+	if tag := serverType.Field(0).Tag.Get("json"); tag != "port" {
+		t.Errorf("Server.Port json tag = %s, want 'port'", tag)
+	}
+	if tag := serverType.Field(1).Tag.Get("json"); tag != "host" {
+		t.Errorf("Server.Host json tag = %s, want 'host'", tag)
+	}
+	if tag := serverType.Field(2).Tag.Get("json"); tag != "read_timeout" {
+		t.Errorf("Server.ReadTimeout json tag = %s, want 'read_timeout'", tag)
+	}
+	if tag := serverType.Field(3).Tag.Get("json"); tag != "write_timeout" {
+		t.Errorf("Server.WriteTimeout json tag = %s, want 'write_timeout'", tag)
+	}
+	if tag := serverType.Field(4).Tag.Get("json"); tag != "shutdown_timeout" {
+		t.Errorf("Server.ShutdownTimeout json tag = %s, want 'shutdown_timeout'", tag)
 	}
 
 	// Check Test struct tags

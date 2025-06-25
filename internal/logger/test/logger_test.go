@@ -1,12 +1,12 @@
-package test
+package logger_test
 
 import (
 	"log/slog"
 	"os"
 	"testing"
 
-	"github.com/radek-zitek-cloud/goedu-theta/internal/logger"
 	"github.com/radek-zitek-cloud/goedu-theta/internal/config"
+	"github.com/radek-zitek-cloud/goedu-theta/internal/logger"
 )
 
 // Helper to reset the logger singleton for test isolation

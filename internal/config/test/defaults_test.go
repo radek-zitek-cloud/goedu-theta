@@ -1,4 +1,4 @@
-package test
+package config_test
 
 import (
 	"log/slog"
@@ -24,5 +24,21 @@ func TestNewDefaultConfig_Values(t *testing.T) {
 	}
 	if !cfg.Logger.AddSource {
 		t.Error("Expected AddSource to be true by default")
+	}
+	// Test Server defaults
+	if cfg.Server.Port != 8080 {
+		t.Errorf("Expected default server port 8080, got %d", cfg.Server.Port)
+	}
+	if cfg.Server.Host != "localhost" {
+		t.Errorf("Expected default server host 'localhost', got '%s'", cfg.Server.Host)
+	}
+	if cfg.Server.ReadTimeout != 30 {
+		t.Errorf("Expected default read timeout 30, got %d", cfg.Server.ReadTimeout)
+	}
+	if cfg.Server.WriteTimeout != 30 {
+		t.Errorf("Expected default write timeout 30, got %d", cfg.Server.WriteTimeout)
+	}
+	if cfg.Server.ShutdownTimeout != 15 {
+		t.Errorf("Expected default shutdown timeout 15, got %d", cfg.Server.ShutdownTimeout)
 	}
 }

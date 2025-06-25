@@ -6,6 +6,13 @@
         "add_source": true,
         "output": "stdout"
     },
+    "server": {
+        "port": 6910,
+        "host": "localhost",
+        "read_timeout": 31,
+        "write_timeout": 31,
+        "shutdown_timeout": 16
+    },
     "test": {
         "label_def": "added in default JSON",
         "label_override": "added in default JSON"
