@@ -91,6 +91,14 @@ type Config struct {
 	// - Performance and security tuning options
 	Server Server `json:"server" yaml:"server" env:"SERVER"`
 
+	// Database contains the database connection configuration including
+	// host, port, user, password, and database name.
+	//
+	// This configuration is used to establish connections to the database
+	// and should be kept secure. Sensitive information like passwords
+	// should be stored securely and not hard-coded.
+	Database Database `json:"database" yaml:"database" env:"DATABASE"`
+
 	// Test contains test-specific configuration used during automated testing,
 	// integration testing, and quality assurance processes.
 	//
@@ -465,6 +473,24 @@ type Server struct {
 	// Default: 30 seconds (balanced approach for most applications)
 	// Unit: seconds
 	ShutdownTimeout int `json:"shutdown_timeout" yaml:"shutdown_timeout" env:"SERVER_SHUTDOWN_TIMEOUT"`
+}
+
+// Database defines the complete database connection configuration for the GoEdu-Theta application.
+type Database struct {
+	// Host is the hostname or IP address of the database server.
+	Host string `json:"host" yaml:"host" env:"DATABASE_HOST"`
+
+	// Port is the port number on which the database server is listening.
+	Port int `json:"port" yaml:"port" env:"DATABASE_PORT"`
+
+	// User is the username used to authenticate with the database.
+	User string `json:"user" yaml:"user" env:"DATABASE_USER"`
+
+	// Password is the password used to authenticate with the database.
+	Password string `json:"password" yaml:"password" env:"DATABASE_PASSWORD"`
+
+	// Name is the name of the database to connect to.
+	Name string `json:"name" yaml:"name" env:"DATABASE_NAME"`
 }
 
 // Test defines configuration settings specifically for testing scenarios and quality assurance.

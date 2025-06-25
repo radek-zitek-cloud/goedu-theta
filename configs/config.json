@@ -13,6 +13,13 @@
         "write_timeout": 31,
         "shutdown_timeout": 16
     },
+    "database": {
+        "host": "clusterzitekcloud.dznruy0.mongodb.net",
+        "port": 27017,
+        "user": "user",
+        "password": "pass",
+        "name": "db"
+    },
     "test": {
         "label_def": "added in default JSON",
         "label_override": "added in default JSON"

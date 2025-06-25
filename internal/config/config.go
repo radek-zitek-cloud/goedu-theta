@@ -257,7 +257,7 @@ func NewConfig() (*Config, error) {
 func LoadFromJSONFile(filePath string, cfg *Config) error {
 	// Log the configuration file loading attempt for debugging and audit trails
 	// This helps track which configuration files are being processed
-	slog.Debug("� Loading configuration from JSON file",
+	slog.Debug("🌀 Loading configuration from JSON file",
 		slog.String("filepath", filePath), // Full path to the configuration file
 	)
 
@@ -269,7 +269,7 @@ func LoadFromJSONFile(filePath string, cfg *Config) error {
 		// Check for specific error types to provide better error messages
 		if os.IsNotExist(err) {
 			// File not found - this might be expected for optional config files
-			slog.Debug("🔠 Configuration file not found (this may be expected)",
+			slog.Debug("🌀 Configuration file not found (this may be expected)",
 				slog.String("filepath", filePath),
 				slog.Any("error", err),
 			)
@@ -278,7 +278,7 @@ func LoadFromJSONFile(filePath string, cfg *Config) error {
 
 		if os.IsPermission(err) {
 			// Permission denied - this indicates a deployment or security issue
-			slog.Error("� Permission denied reading configuration file",
+			slog.Error("🌀 Permission denied reading configuration file",
 				slog.String("filepath", filePath),
 				slog.Any("error", err),
 			)
@@ -286,7 +286,7 @@ func LoadFromJSONFile(filePath string, cfg *Config) error {
 		}
 
 		// Other I/O errors (disk full, network issues, etc.)
-		slog.Error("🔠 I/O error reading configuration file",
+		slog.Error("🌀 I/O error reading configuration file",
 			slog.String("filepath", filePath),
 			slog.Any("error", err),
 		)
@@ -298,7 +298,7 @@ func LoadFromJSONFile(filePath string, cfg *Config) error {
 	if err := json.Unmarshal(data, cfg); err != nil {
 		// JSON parsing errors include line/column information for debugging
 		// This is crucial for identifying malformed configuration files
-		slog.Error("🔠 Invalid JSON in configuration file",
+		slog.Error("🌀 Invalid JSON in configuration file",
 			slog.String("filepath", filePath),      // Which file had the error
 			slog.Int("file_size_bytes", len(data)), // Size of the file for context
 			slog.Any("error", err),                 // Detailed JSON error with position
@@ -308,7 +308,7 @@ func LoadFromJSONFile(filePath string, cfg *Config) error {
 
 	// Step 3: Log successful configuration loading with basic statistics
 	// This provides operational visibility into configuration loading
-	slog.Debug("� Configuration successfully loaded from JSON file",
+	slog.Debug("🌀 Configuration successfully loaded from JSON file",
 		slog.String("filepath", filePath),                  // Source file
 		slog.Int("file_size_bytes", len(data)),             // File size for monitoring
 		slog.String("loaded_environment", cfg.Environment), // Which environment was loaded
@@ -476,15 +476,18 @@ func OverrideFromEnv(dotenvFile string, cfg *Config) error {
 
 			// Check if this field has an environment variable mapping
 			envTag := field.Tag.Get("env")
+
+			// Always recurse into nested structs to process their individual fields
+			if fieldValue.Kind() == reflect.Struct {
+				slog.Debug("🔠 Processing nested struct",
+					slog.String("struct", fullFieldName),
+				)
+				processStruct(fieldValue, fieldValue.Type(), fullFieldName)
+			}
+
+			// If no env tag, skip direct field processing but continue with nested struct processing
 			if envTag == "" {
-				// No env tag - check if this is a nested struct to recurse into
-				if fieldValue.Kind() == reflect.Struct {
-					slog.Debug("🔠 Processing nested struct",
-						slog.String("struct", fullFieldName),
-					)
-					processStruct(fieldValue, fieldValue.Type(), fullFieldName)
-				}
-				continue // Skip fields without env tags
+				continue
 			}
 
 			// Step 4: Determine the environment variable value using precedence rules

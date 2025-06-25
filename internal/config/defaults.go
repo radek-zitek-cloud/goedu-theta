@@ -135,6 +135,24 @@ func NewDefaultConfig(logger slog.Logger) *Config {
 			ShutdownTimeout: 15,
 		},
 
+		// Database: Configure database connection settings with secure defaults.
+		Database: Database{
+			// Host: The hostname or IP address of the database server.
+			Host: "localhost",
+
+			// Port: The port number on which the database server is listening.
+			Port: 27017,
+
+			// User: The username used to authenticate with the database.
+			User: "user",
+			
+			// Password: The password used to authenticate with the database.
+			Password: "pass",
+
+			// Name: The name of the database to connect to.
+			Name: "database",
+		},
+
 		// Test: Test configuration is typically empty for defaults since test values
 		// are usually provided through test-specific configuration files or environment variables.
 		// This ensures tests have explicit configuration rather than relying on defaults.
