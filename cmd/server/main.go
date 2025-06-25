@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/radek-zitek-cloud/goedu-theta/internal/config"
 	"github.com/radek-zitek-cloud/goedu-theta/internal/logger"
+	"github.com/radek-zitek-cloud/goedu-theta/internal/server"
 )
 
 // main is the entry point for the GoEdu-Theta server application.
@@ -66,11 +72,44 @@ func main() {
 		slog.Any("logger", cfg.Logger),
 	)
 
-	// TODO (2025-06-24): Start the main server logic here (HTTP server, gRPC, etc.)
 	// This is a placeholder for future application startup code.
 	slog.Info("🚀 Server is starting up...")
-	
-	// Create the main server instance and start it.
 
-	slog.Info("🪛 Server started successfully, ready to handle requests")
+	// Create the HTTP server instance
+	httpServer := server.NewServer(cfg.Server, slog.Default())
+
+	// Start the HTTP server
+	if err := httpServer.Start(); err != nil {
+		slog.Error("❌ Failed to start HTTP server",
+			slog.Any("error", err),
+		)
+		return
+	}
+
+	slog.Info("🪛 HTTP server started successfully",
+		slog.String("address", cfg.Server.Host),
+		slog.Int("port", cfg.Server.Port),
+	)
+
+	// Set up graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	// Wait for shutdown signal
+	<-quit
+	slog.Info("🛑 Shutdown signal received, initiating graceful shutdown...")
+
+	// Create shutdown context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.Server.ShutdownTimeout)*time.Second)
+	defer cancel()
+
+	// Shutdown the HTTP server gracefully
+	if err := httpServer.Shutdown(ctx); err != nil {
+		slog.Error("❌ Error during server shutdown",
+			slog.Any("error", err),
+		)
+		return
+	}
+
+	slog.Info("✅ Server shutdown completed successfully")
 }

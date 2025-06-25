@@ -1,4 +1,4 @@
-package test
+package config_test
 
 import (
 	"log/slog"
@@ -25,6 +25,13 @@ func TestNewDefaultConfig_ReturnsDefaults(t *testing.T) {
 	}
 	if !cfg.Logger.AddSource {
 		t.Error("Expected AddSource to be true by default")
+	}
+	// Test Server defaults
+	if cfg.Server.Port != 8080 {
+		t.Errorf("Expected default server port 8080, got %d", cfg.Server.Port)
+	}
+	if cfg.Server.Host != "localhost" {
+		t.Errorf("Expected default server host 'localhost', got '%s'", cfg.Server.Host)
 	}
 }
 
