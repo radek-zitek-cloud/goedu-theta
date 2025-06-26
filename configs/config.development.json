@@ -6,6 +6,15 @@
         "write_timeout": 31,
         "shutdown_timeout": 16
     },
+    "database": {
+        "host": "clusterzitekcloud.dznruy0.mongodb.net",
+        "port": 27017,
+        "user": "radek",
+        "password": "your_atlas_password",
+        "name": "goedu_theta_dev",
+        "is_atlas": true,
+        "atlas_app_name": "ClusterZitekCloud"
+    },
     "logger": {
         "level": "debug",
         "format": "pretty",

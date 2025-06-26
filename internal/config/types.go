@@ -478,9 +478,11 @@ type Server struct {
 // Database defines the complete database connection configuration for the GoEdu-Theta application.
 type Database struct {
 	// Host is the hostname or IP address of the database server.
+	// For MongoDB Atlas, this should be the cluster hostname (e.g., "clusterzitekcloud.dznruy0.mongodb.net").
 	Host string `json:"host" yaml:"host" env:"DATABASE_HOST"`
 
 	// Port is the port number on which the database server is listening.
+	// For MongoDB Atlas with SRV connections, this field is ignored as the port is resolved via DNS.
 	Port int `json:"port" yaml:"port" env:"DATABASE_PORT"`
 
 	// User is the username used to authenticate with the database.
@@ -491,6 +493,15 @@ type Database struct {
 
 	// Name is the name of the database to connect to.
 	Name string `json:"name" yaml:"name" env:"DATABASE_NAME"`
+
+	// IsAtlas indicates whether this is a MongoDB Atlas connection.
+	// When true, uses mongodb+srv:// scheme with DNS SRV record resolution.
+	// When false, uses standard mongodb:// scheme with direct host:port connection.
+	IsAtlas bool `json:"is_atlas" yaml:"is_atlas" env:"DATABASE_IS_ATLAS"`
+
+	// AtlasAppName is the application name for MongoDB Atlas connections.
+	// This helps with monitoring and debugging in the Atlas dashboard.
+	AtlasAppName string `json:"atlas_app_name" yaml:"atlas_app_name" env:"DATABASE_ATLAS_APP_NAME"`
 }
 
 // Test defines configuration settings specifically for testing scenarios and quality assurance.

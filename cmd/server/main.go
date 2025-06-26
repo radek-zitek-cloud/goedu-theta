@@ -11,6 +11,7 @@ import (
 	"github.com/radek-zitek-cloud/goedu-theta/internal/config"
 	"github.com/radek-zitek-cloud/goedu-theta/internal/logger"
 	"github.com/radek-zitek-cloud/goedu-theta/internal/server"
+	"github.com/radek-zitek-cloud/goedu-theta/internal/database"
 )
 
 // main is the entry point for the GoEdu-Theta server application.
@@ -71,6 +72,26 @@ func main() {
 	slog.Debug("🔠 Logger configured successfully",
 		slog.Any("logger", cfg.Logger),
 	)
+
+	// Initialize MongoDB connection
+	slog.Info("🍃 Initializing MongoDB connection...")
+
+	dbManager, err := database.NewMongoDBManager(cfg.Database, logger.GetLogger())
+	if err != nil {
+		slog.Error("❌ Failed to initialize MongoDB connection", slog.Any("error", err))
+		return
+	}
+	defer func() {
+		if err := dbManager.Close(); err != nil {
+			slog.Error("❌ Failed to close MongoDB connection", slog.Any("error", err))
+		} else {
+			slog.Info("🍃 MongoDB connection closed successfully")
+		}
+	}()
+
+	slog.Info("🍃 MongoDB connection established successfully")
+
+
 
 	// This is a placeholder for future application startup code.
 	slog.Info("🚀 Server is starting up...")

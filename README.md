@@ -11,6 +11,7 @@ A high-performance HTTP server built with Go, featuring comprehensive configurat
 - **High-Performance HTTP Server** - Built with Gin framework for optimal performance
 - **Advanced Configuration Management** - Multi-source configuration with environment override support
 - **Structured Logging** - Production-ready logging with slog and pretty formatting
+- **MongoDB Database Integration** - Production-ready MongoDB connection with pooling and health monitoring
 - **Health & Metrics Endpoints** - Comprehensive observability for monitoring and alerting
 - **Environment-Based Configuration** - Support for multiple deployment environments
 - **Graceful Shutdown** - Proper resource cleanup and connection handling

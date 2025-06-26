@@ -1,3 +1,23 @@
 {
-    
+    "database": {
+        "host": "clusterzitekcloud.dznruy0.mongodb.net",
+        "port": 27017,
+        "user": "radek",
+        "password": "production_atlas_password",
+        "name": "goedu_theta_prod",
+        "is_atlas": true,
+        "atlas_app_name": "ClusterZitekCloud"
+    },
+    "logger": {
+        "level": "info",
+        "format": "json",
+        "add_source": false
+    },
+    "server": {
+        "port": 8080,
+        "host": "0.0.0.0",
+        "read_timeout": 30,
+        "write_timeout": 30,
+        "shutdown_timeout": 15
+    }
 }

@@ -16,9 +16,11 @@
     "database": {
         "host": "clusterzitekcloud.dznruy0.mongodb.net",
         "port": 27017,
-        "user": "user",
-        "password": "pass",
-        "name": "db"
+        "user": "radek",
+        "password": "your_atlas_password",
+        "name": "goedu_theta",
+        "is_atlas": true,
+        "atlas_app_name": "ClusterZitekCloud"
     },
     "test": {
         "label_def": "added in default JSON",
