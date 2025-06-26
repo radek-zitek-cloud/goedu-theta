@@ -41,8 +41,7 @@ type Server struct {
 func NewServer(cfg config.Server, logger *slog.Logger) *Server {
 	// Set Gin mode to release to disable debug output and improve performance
 	// This prevents Gin from printing debug information to stdout in production
-	// For now setting to debug mode for local development
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.ReleaseMode)
 
 	// Create a new Gin router instance without any default middleware
 	// gin.New() creates a bare router, unlike gin.Default() which includes logger and recovery
