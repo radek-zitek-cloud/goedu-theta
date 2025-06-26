@@ -76,7 +76,7 @@ func main() {
 	slog.Info("🚀 Server is starting up...")
 
 	// Create the HTTP server instance
-	httpServer := server.NewServer(cfg.Server, slog.Default())
+	httpServer := server.NewServer(cfg.Server, logger.GetLogger())
 
 	// Start the HTTP server
 	if err := httpServer.Start(); err != nil {
