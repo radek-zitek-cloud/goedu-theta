@@ -4,9 +4,12 @@
 # Add your .env files here to prevent them from being tracked by Git
 .env
 
-# Ignore bin/ directory
+# Ignore bin/ directory and build artifacts
 # The bin/ directory is typically used to store executable files or scripts.
 # These files are often generated during the build process and do not need to be tracked by Git
 # Add the bin/ directory to prevent it from being tracked by Git
 bin/
+
+# Ignore compiled binaries
+server
 
